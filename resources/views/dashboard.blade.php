@@ -55,19 +55,19 @@
 <table border="1" cellpadding="10">
     <tr>
         <th>No</th>
-        <th>Expense</th>
         <th>Date</th>
         <th>Category</th>
         <th>Description</th>
+        <th>Amount</th>
         <th>Action</th>
     </tr>
     @foreach ($expenses as $expense)
     <tr>
         <td>{{ $loop->iteration }}</td>
-        <td>{{ rupiah($expense->expense) }}</td>
         <td>{{ $expense->date }}</td>
         <td>{{ ucfirst($expense->category) }}</td>
         <td>{{ $expense->description }}</td>
+        <td>{{ rupiah($expense->expense) }}</td>
         <td>
             <a href="/expense/{{ $expense->id }}/edit">Edit</a>
 

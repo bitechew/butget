@@ -2,44 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Expense</title>
+    <title>Add Expense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-<h2>Input Expense</h2>
+    <div class="bg-white w-full max-w-4xl rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold mb-6">Add New Expense</h2>
 
-@if (session('success'))
-    <p style="color: green;">{{ session('success') }}</p>
-@endif
+        @if (session('success'))
+            <p class="text-green-600 mb-4">{{ session('success') }}</p>
+        @endif
 
-<h2>Add Expense</h2>
+        <form action="/expense" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @csrf
 
-<form action="/expense" method="POST">
-    @csrf
+            <!-- Date -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Date</label>
+                <input
+                    type="date"
+                    name="date"
+                    value="{{ date('Y-m-d') }}"
+                    class="w-full h-12 px-4 rounded-lg border border-gray-400 bg-white
+                        focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    required
+                >
+            </div>
 
-    <label>Date</label><br>
-    <input type="date" name="date" value="{{ date('Y-m-d') }}" required><br><br>
+            <!-- Amount -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Amount ($)</label>
+                <input
+                    type="text"
+                    step="0.01"
+                    name="expense"
+                    placeholder="0.00"
+                    class="w-full h-12 px-4 rounded-lg border border-gray-400 bg-white
+                        focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    required
+                >
+            </div>
 
-    <label>Amount</label><br>
-    <input type="text" name="expense" required><br><br>
+            <!-- Category -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Category</label>
+                <select
+                    name="category"
+                    class="w-full h-12 px-4 pr-12 rounded-lg border border-gray-400 bg-white
+                        focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                    required
+                >
+                    <option value="food">Food</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="savings">Savings</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="entertainment">Entertainment</option>
+                </select>
+            </div>
 
-    <label>Category</label><br>
-    <select name="category" required>
-        <option value="">-- Choose Category --</option>
-        <option value="food">Food</option>
-        <option value="utilities">Utilities</option>
-        <option value="savings">Savings</option>
-        <option value="transportation">Transportation</option>
-        <option value="entertainment">Entertainment</option>
-    </select><br><br>
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Description (optional)</label>
+                <input
+                    type="text"
+                    name="description"
+                    placeholder="e.g., Grocery shopping"
+                    class="w-full h-12 px-4 rounded-lg border border-gray-400 bg-white
+                        focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                >
+            </div>
 
-    <label>Description</label><br>
-    <textarea name="description" rows="3"></textarea><br><br>
+            <!-- Button -->
+            <div class="md:col-span-2 mt-4 flex items-center gap-4">
+                <button
+                    type="submit"
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                >
+                    Save Expense
+                </button>
 
-    <button type="submit">Save</button>
-    <a href="/dashboard" style="margin-left:10px;">Back to Dashboard</a>
-</form>
-
+                <a href="/dashboard" class="text-gray-600 hover:underline">
+                    Back to Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
 
 </body>
 </html>
