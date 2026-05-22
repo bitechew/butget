@@ -4,18 +4,20 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ButgetController;
 use App\Http\Controllers\ExpenseController;
 
-Route::get('/butget', [ButgetController::class, 'create']);
-Route::post('/butget', [ButgetController::class, 'store']);
+Route::controller(ButgetController::class)->group(function () {
+    Route::get('/', 'index')->name('butgets.index'); 
+    Route::get('/butgets/create', 'create')->name('butgets.create');
+    Route::post('/butgets', 'store')->name('butgets.store');
+    Route::get('/butgets/{id}/edit', 'edit')->name('butgets.edit');
+    Route::put('/butgets/{id}', 'update')->name('butgets.update');       
+    Route::delete('/butgets/{id}', 'destroy')->name('butgets.destroy'); 
+});
 
-Route::get('/expense', [ExpenseController::class, 'create']);
-Route::post('/expense', [ExpenseController::class, 'store']);
+Route::controller(ExpenseController::class)->group(function () {
+    Route::get('/expenses', 'create')->name('expenses.create');
+    Route::post('/expenses', 'store')->name('expenses.store');
+    Route::get('/expenses/{id}/edit', 'edit')->name('expenses.edit');
+    Route::put('/expenses/{id}', 'update')->name('expenses.update');
+    Route::delete('/expenses/{id}', 'destroy')->name('expenses.destroy');
+});
 
-Route::get('/dashboard', [ButgetController::class, 'index']);
-
-Route::get('/butget/{id}/edit', [ButgetController::class, 'edit']);
-Route::put('/butget/{id}', [ButgetController::class, 'update']);
-Route::delete('/butget/{id}', [ButgetController::class, 'destroy']);
-
-Route::get('/expense/{id}/edit', [ExpenseController::class, 'edit']);
-Route::put('/expense/{id}', [ExpenseController::class, 'update']);
-Route::delete('/expense/{id}', [ExpenseController::class, 'destroy']);

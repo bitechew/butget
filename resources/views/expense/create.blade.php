@@ -14,7 +14,7 @@
             <p class="text-green-600 mb-4">{{ session('success') }}</p>
         @endif
 
-        <form action="/expense" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form action="{{ route('expenses.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @csrf
 
             <!-- Date -->
@@ -82,7 +82,7 @@
                     Save Expense
                 </button>
 
-                <a href="/dashboard" class="text-gray-600 hover:underline">
+                <a href="{{ route('butgets.index') }}" class="text-gray-600 hover:underline">
                     Back to Dashboard
                 </a>
             </div>

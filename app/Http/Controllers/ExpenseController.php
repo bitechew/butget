@@ -23,7 +23,7 @@ class ExpenseController extends Controller
 
         Expense::create($request->all());
 
-        return redirect('/dashboard')->with('success', 'Expense added successfully!');
+        return redirect(route('butgets.index'))->with('success', 'Expense added successfully!');
     }
 
     public function edit($id)
@@ -43,13 +43,13 @@ class ExpenseController extends Controller
 
         Expense::findOrFail($id)->update($request->all());
 
-        return redirect('/dashboard')->with('success', 'Expense updated successfully!');
+        return redirect(route('butgets.index'))->with('success', 'Expense updated successfully!');
     }
 
     public function destroy($id)
     {
         Expense::destroy($id);
-        return redirect('/dashboard')->with('success', 'Expense deleted!');
+        return redirect(route('butgets.index'))->with('success', 'Expense deleted!');
     }
 
 }

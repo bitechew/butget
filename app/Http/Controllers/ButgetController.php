@@ -23,7 +23,7 @@ class ButgetController extends Controller
             'monthly_income' => $request->monthly_income
         ]);
 
-        return redirect('/dashboard')->with('success', 'Income added successfully!');
+        return redirect(route('butgets.index'))->with('success', 'Income added successfully!');
     }
 
     public function index()
@@ -47,7 +47,7 @@ class ButgetController extends Controller
     public function edit($id)
     {
         $income = Butget::findOrFail($id);
-        return view('butget.edit', compact('income'));
+        return view('butgets.edit', compact('income'));
     }
 
     public function update(Request $request, $id)
@@ -59,13 +59,13 @@ class ButgetController extends Controller
         $income = Butget::findOrFail($id);
         $income->update($request->all());
 
-        return redirect('/dashboard')->with('success', 'Income updated!');
+        return redirect(route('butgets.index'))->with('success', 'Income updated!');
     }
 
     public function destroy($id)
     {
         Butget::destroy($id);
-        return redirect('/dashboard')->with('success', 'Income deleted!');
+        return redirect(route('butgets.index'))->with('success', 'Income deleted!');
     }
 
 }

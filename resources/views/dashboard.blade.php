@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Butget Dashboard</title>
-</head>
-<body>
+@extends('layouts.app')
 
+@section('title', 'dashboard')
+
+@section('content')
 @if (session('success'))
     <p style="color: green;">{{ session('success') }}</p>
 @endif
 
 <h1>Butget Dashboard</h1>
 
-<a href="/butget">+ Add Income</a>
-<a href="/expense">+ Add Expense</a>
+<a href="{{ route('butgets.create') }}">+ Add Income</a>
+<a href="{{ route('expenses.create') }}">+ Add Expense</a>
 
 <hr>
 
@@ -36,9 +33,9 @@
         <td>{{ $loop->iteration }}</td>
         <td>{{ rupiah($income->monthly_income) }}</td>
         <td>
-            <a href="/butget/{{ $income->id }}/edit">Edit</a>
+            <a href="{{ route('butgets.edit', $income->id) }}">Edit</a>
 
-            <form action="/butget/{{ $income->id }}" method="POST" style="display:inline">
+            <form action="{{ route('butgets.destroy', $income->id) }}" method="POST" style="display:inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" onclick="return confirm('Delete income?')">Delete</button>
@@ -69,9 +66,9 @@
         <td>{{ $expense->description }}</td>
         <td>{{ rupiah($expense->expense) }}</td>
         <td>
-            <a href="/expense/{{ $expense->id }}/edit">Edit</a>
+            <a href="{{ route('expenses.edit', $expense->id) }}">Edit</a>
 
-            <form action="/expense/{{ $expense->id }}" method="POST" style="display:inline">
+            <form action="{{ route('expenses.destroy', $expense->id) }}" method="POST" style="display:inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" onclick="return confirm('Delete expense?')">Delete</button>
@@ -80,6 +77,4 @@
     </tr>
     @endforeach
 </table>
-
-</body>
-</html>
+@endsection
