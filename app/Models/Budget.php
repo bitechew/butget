@@ -12,14 +12,21 @@ class Budget extends Model
 
     protected $fillable = [
         'user_id', 'category', 'amount', 'month', 'year', 'color', 'icon',
+        'account_id', 'limit_amount', 'period', 'alert_threshold',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'limit_amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 }

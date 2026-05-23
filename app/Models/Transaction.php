@@ -11,8 +11,8 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'account_id', 'title', 'amount', 'type', 'category',
-        'date', 'notes', 'payment_method', 'is_recurring', 'recurrence_interval',
+        'user_id', 'account_id', 'from_account_id', 'to_account_id', 'title', 'amount', 'type', 'category',
+        'date', 'notes', 'payment_method', 'is_recurring', 'recurrence_interval', 'recurring_parent_id',
     ];
 
     protected $casts = [
@@ -29,5 +29,25 @@ class Transaction extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function fromAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'from_account_id');
+    }
+
+    public function toAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'to_account_id');
+    }
+
+    public function recurringParent(): BelongsTo
+    {
+        return $this->belongsTo(Transaction::class, 'recurring_parent_id');
+    }
+
+    public function recurringChildren()
+    {
+        return $this->hasMany(Transaction::class, 'recurring_parent_id');
     }
 }

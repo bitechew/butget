@@ -11,7 +11,7 @@ class Goal extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'title', 'target_amount', 'current_amount',
+        'user_id', 'account_id', 'title', 'target_amount', 'current_amount',
         'target_date', 'icon', 'color', 'notes', 'is_completed',
     ];
 
@@ -25,6 +25,11 @@ class Goal extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 
     public function getProgressPercentageAttribute(): float

@@ -29,4 +29,34 @@ class Account extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function expenseTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'from_account_id');
+    }
+
+    public function incomeTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'to_account_id');
+    }
+
+    public function outgoingTransfers(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'from_account_id')->where('type', 'transfer');
+    }
+
+    public function incomingTransfers(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'to_account_id')->where('type', 'transfer');
+    }
+
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class);
+    }
+
+    public function goals(): HasMany
+    {
+        return $this->hasMany(Goal::class);
+    }
 }
