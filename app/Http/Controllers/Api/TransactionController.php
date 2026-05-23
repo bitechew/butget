@@ -4,18 +4,26 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class TransactionController extends Controller
 {
+    protected $transactionService;
+
+    public function __construct(TransactionService $transactionService)
+    {
+        $this->transactionService = $transactionService;
+    }
+
     public function index(Request $request)
     {
-        $query = $request->user()->transactions()->with('account');
+        $query = $request->user()->transactions()->with(['fromAccount', 'toAccount']);
 
         if ($search = $request->search) {
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
+                $q->where('description', 'like', "%{$search}%")
                   ->orWhere('category', 'like', "%{$search}%")
                   ->orWhere('notes', 'like', "%{$search}%");
             });
@@ -39,7 +47,7 @@ class TransactionController extends Controller
 
         $sortField = $request->get('sort', 'date');
         $sortDir   = $request->get('direction', 'desc');
-        $allowedSorts = ['date', 'amount', 'title', 'category'];
+        $allowedSorts = ['date', 'amount', 'description', 'category'];
         if (in_array($sortField, $allowedSorts)) {
             $query->orderBy($sortField, $sortDir === 'asc' ? 'asc' : 'desc');
         }
@@ -51,28 +59,28 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title'               => 'required|string|max:255',
+            'description'         => 'required|string|max:255',
             'amount'              => 'required|numeric|min:0.01',
             'type'                => 'required|in:income,expense,transfer',
-            'category'            => 'required|string|max:100',
+            'category'            => 'required_unless:type,transfer|string|max:100',
             'date'                => 'required|date',
             'notes'               => 'nullable|string',
-            'payment_method'      => 'nullable|string|max:100',
-            'account_id'          => 'nullable|exists:accounts,id',
+            'from_account_id'     => 'required_if:type,expense,transfer|exists:accounts,id',
+            'to_account_id'       => 'required_if:type,income,transfer|exists:accounts,id',
             'is_recurring'        => 'boolean',
             'recurrence_interval' => 'nullable|in:daily,weekly,monthly,yearly',
         ]);
 
         $data['user_id'] = $request->user()->id;
-        $transaction = Transaction::create($data);
+        $transaction = $this->transactionService->createTransaction($data);
 
-        return response()->json($transaction->load('account'), 201);
+        return response()->json($transaction->load(['fromAccount', 'toAccount']), 201);
     }
 
     public function show(Request $request, Transaction $transaction)
     {
         $this->authorize('view', $transaction);
-        return response()->json($transaction->load('account'));
+        return response()->json($transaction->load(['fromAccount', 'toAccount']));
     }
 
     public function update(Request $request, Transaction $transaction)
@@ -80,26 +88,26 @@ class TransactionController extends Controller
         $this->authorize('update', $transaction);
 
         $data = $request->validate([
-            'title'               => 'sometimes|string|max:255',
+            'description'         => 'sometimes|string|max:255',
             'amount'              => 'sometimes|numeric|min:0.01',
             'type'                => 'sometimes|in:income,expense,transfer',
             'category'            => 'sometimes|string|max:100',
             'date'                => 'sometimes|date',
             'notes'               => 'nullable|string',
-            'payment_method'      => 'nullable|string|max:100',
-            'account_id'          => 'nullable|exists:accounts,id',
+            'from_account_id'     => 'sometimes|exists:accounts,id',
+            'to_account_id'       => 'sometimes|exists:accounts,id',
             'is_recurring'        => 'boolean',
             'recurrence_interval' => 'nullable|in:daily,weekly,monthly,yearly',
         ]);
 
-        $transaction->update($data);
-        return response()->json($transaction->load('account'));
+        $transaction = $this->transactionService->updateTransaction($transaction, $data);
+        return response()->json($transaction->load(['fromAccount', 'toAccount']));
     }
 
     public function destroy(Request $request, Transaction $transaction)
     {
         $this->authorize('delete', $transaction);
-        $transaction->delete();
+        $this->transactionService->deleteTransaction($transaction);
         return response()->json(null, 204);
     }
 

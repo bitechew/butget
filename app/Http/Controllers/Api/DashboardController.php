@@ -41,6 +41,9 @@ class DashboardController extends Controller
         // Total balance from accounts
         $totalBalance = (float) $user->accounts()->where('is_active', true)->sum('balance');
 
+        // All accounts
+        $accounts = $user->accounts()->where('is_active', true)->orderBy('name')->get();
+
         // Net worth = assets - liabilities
         $assets = (float) $user->accounts()
             ->whereIn('type', ['cash', 'checking', 'savings', 'investment'])
@@ -90,7 +93,7 @@ class DashboardController extends Controller
 
         // Recent transactions
         $recentTransactions = $user->transactions()
-            ->with('account')
+            ->with(['fromAccount', 'toAccount'])
             ->orderByDesc('date')
             ->orderByDesc('created_at')
             ->limit(7)
@@ -101,15 +104,10 @@ class DashboardController extends Controller
 
         return response()->json([
             'total_balance'       => $totalBalance,
-            'monthly_income'      => $income,
-            'monthly_expenses'    => $expenses,
-            'savings_rate'        => $savingsRate,
-            'cash_flow'           => $cashFlow,
             'net_worth'           => $netWorth,
-            'assets'              => $assets,
-            'liabilities'         => $liabilities,
-            'income_trend'        => $prevIncome > 0 ? round((($income - $prevIncome) / $prevIncome) * 100, 1) : 0,
-            'expense_trend'       => $prevExpenses > 0 ? round((($expenses - $prevExpenses) / $prevExpenses) * 100, 1) : 0,
+            'total_income'        => $income,
+            'total_expenses'      => $expenses,
+            'accounts'            => $accounts,
             'history'             => $history,
             'category_spending'   => $categorySpending,
             'recent_transactions' => $recentTransactions,
@@ -140,7 +138,7 @@ class DashboardController extends Controller
             ->first();
 
         if ($topCat) {
-            $insights[] = ['type' => 'info', 'message' => "Your top spending category this month is {$topCat->category} (\${$topCat->total})."];
+            $insights[] = ['type' => 'info', 'message' => "Your top spending category this month is {$topCat->category} (" . number_format($topCat->total, 0, ',', '.') . ")."];
         }
 
         return $insights;

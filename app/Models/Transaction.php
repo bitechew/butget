@@ -11,8 +11,8 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'account_id', 'from_account_id', 'to_account_id', 'title', 'amount', 'type', 'category',
-        'date', 'notes', 'payment_method', 'is_recurring', 'recurrence_interval', 'recurring_parent_id',
+        'user_id', 'from_account_id', 'to_account_id', 'description', 'amount', 'type', 'category',
+        'date', 'notes', 'is_recurring', 'recurrence_interval', 'recurring_parent_id',
     ];
 
     protected $casts = [
@@ -24,11 +24,6 @@ class Transaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function account(): BelongsTo
-    {
-        return $this->belongsTo(Account::class);
     }
 
     public function fromAccount(): BelongsTo
