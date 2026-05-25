@@ -10,9 +10,17 @@ class AccountController extends Controller
 {
     public function index(Request $request)
     {
-        return response()->json(
-            $request->user()->accounts()->where('is_active', true)->get()
-        );
+        $query = $request->user()->accounts();
+        
+        if ($request->has('include_inactive')) {
+            // return all accounts
+        } else if ($request->has('inactive_only')) {
+            $query->where('is_active', false);
+        } else {
+            $query->where('is_active', true);
+        }
+
+        return response()->json($query->get());
     }
 
     public function store(Request $request)

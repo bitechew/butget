@@ -81,19 +81,19 @@ class DashboardController extends Controller
             ];
         }
 
-        // Category spending (current month)
         $categorySpending = $user->transactions()
-            ->where('type', 'expense')
-            ->whereMonth('date', $month)->whereYear('date', $year)
-            ->selectRaw('category, SUM(amount) as total')
-            ->groupBy('category')
+            ->join('categories', 'transactions.category_id', '=', 'categories.id')
+            ->where('transactions.type', 'expense')
+            ->whereMonth('transactions.date', $month)->whereYear('transactions.date', $year)
+            ->selectRaw('categories.name as category, SUM(transactions.amount) as total')
+            ->groupBy('categories.name')
             ->orderByDesc('total')
             ->get()
             ->map(fn($row) => ['name' => $row->category, 'value' => (float) $row->total]);
 
         // Recent transactions
         $recentTransactions = $user->transactions()
-            ->with(['fromAccount', 'toAccount'])
+            ->with(['fromAccount', 'toAccount', 'category'])
             ->orderByDesc('date')
             ->orderByDesc('created_at')
             ->limit(7)
@@ -128,12 +128,12 @@ class DashboardController extends Controller
             $insights[] = ['type' => 'positive', 'message' => "Great job! You're saving " . round((($income - $expenses) / $income) * 100, 1) . "% of your income."];
         }
 
-        // Top spending category
         $topCat = $user->transactions()
-            ->where('type', 'expense')
-            ->whereMonth('date', $month)->whereYear('date', $year)
-            ->selectRaw('category, SUM(amount) as total')
-            ->groupBy('category')
+            ->join('categories', 'transactions.category_id', '=', 'categories.id')
+            ->where('transactions.type', 'expense')
+            ->whereMonth('transactions.date', $month)->whereYear('transactions.date', $year)
+            ->selectRaw('categories.name as category, SUM(transactions.amount) as total')
+            ->groupBy('categories.name')
             ->orderByDesc('total')
             ->first();
 

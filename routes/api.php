@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\GoalController;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
@@ -36,4 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Accounts
     Route::apiResource('accounts', AccountController::class)->except(['show']);
+
+    // Categories
+    Route::apiResource('categories', CategoryController::class)->except(['show']);
 });

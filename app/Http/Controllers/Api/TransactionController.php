@@ -24,7 +24,9 @@ class TransactionController extends Controller
         if ($search = $request->search) {
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('category', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
                   ->orWhere('notes', 'like', "%{$search}%");
             });
         }
@@ -33,8 +35,8 @@ class TransactionController extends Controller
             $query->where('type', $type);
         }
 
-        if ($category = $request->category) {
-            $query->where('category', $category);
+        if ($categoryId = $request->category_id) {
+            $query->where('category_id', $categoryId);
         }
 
         if ($from = $request->date_from) {
@@ -47,7 +49,7 @@ class TransactionController extends Controller
 
         $sortField = $request->get('sort', 'date');
         $sortDir   = $request->get('direction', 'desc');
-        $allowedSorts = ['date', 'amount', 'description', 'category'];
+        $allowedSorts = ['date', 'amount', 'description', 'category_id'];
         if (in_array($sortField, $allowedSorts)) {
             $query->orderBy($sortField, $sortDir === 'asc' ? 'asc' : 'desc');
         }
@@ -62,7 +64,7 @@ class TransactionController extends Controller
             'description'         => 'required|string|max:255',
             'amount'              => 'required|numeric|min:0.01',
             'type'                => 'required|in:income,expense,transfer',
-            'category'            => 'required_unless:type,transfer|string|max:100',
+            'category_id'         => 'required_unless:type,transfer|exists:categories,id',
             'date'                => 'required|date',
             'notes'               => 'nullable|string',
             'from_account_id'     => 'required_if:type,expense,transfer|exists:accounts,id',
@@ -91,7 +93,7 @@ class TransactionController extends Controller
             'description'         => 'sometimes|string|max:255',
             'amount'              => 'sometimes|numeric|min:0.01',
             'type'                => 'sometimes|in:income,expense,transfer',
-            'category'            => 'sometimes|string|max:100',
+            'category_id'         => 'sometimes|exists:categories,id',
             'date'                => 'sometimes|date',
             'notes'               => 'nullable|string',
             'from_account_id'     => 'sometimes|exists:accounts,id',
@@ -111,15 +113,4 @@ class TransactionController extends Controller
         return response()->json(null, 204);
     }
 
-    public function categories(Request $request)
-    {
-        $categories = $request->user()->transactions()
-            ->select('category')
-            ->distinct()
-            ->pluck('category')
-            ->sort()
-            ->values();
-
-        return response()->json($categories);
-    }
 }

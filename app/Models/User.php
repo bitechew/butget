@@ -42,4 +42,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Account::class);
     }
+
+    public function categories()
+    {
+        return $this->hasMany(\App\Models\Category::class);
+    }
 }

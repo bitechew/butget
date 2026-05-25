@@ -11,7 +11,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'from_account_id', 'to_account_id', 'description', 'amount', 'type', 'category',
+        'user_id', 'from_account_id', 'to_account_id', 'description', 'amount', 'type', 'category_id',
         'date', 'notes', 'is_recurring', 'recurrence_interval', 'recurring_parent_id',
     ];
 
@@ -44,5 +44,10 @@ class Transaction extends Model
     public function recurringChildren()
     {
         return $this->hasMany(Transaction::class, 'recurring_parent_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 }
