@@ -19,7 +19,7 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
-        $query = $request->user()->transactions()->with(['fromAccount', 'toAccount']);
+        $query = $request->user()->transactions()->with(['fromAccount', 'toAccount', 'category']);
 
         if ($search = $request->search) {
             $query->where(function ($q) use ($search) {
