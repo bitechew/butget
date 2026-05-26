@@ -64,4 +64,11 @@ class AccountController extends Controller
         $account->update(['is_active' => false]);
         return response()->json(null, 204);
     }
+
+    public function restore(Request $request, Account $account)
+    {
+        $this->authorize('update', $account);
+        $account->update(['is_active' => true]);
+        return response()->json($account);
+    }
 }

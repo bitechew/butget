@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\GoalController;
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Support\Facades\Route;
@@ -36,8 +37,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('goals', GoalController::class)->except(['show']);
 
     // Accounts
+    Route::post('/accounts/{account}/restore', [AccountController::class, 'restore']);
     Route::apiResource('accounts', AccountController::class)->except(['show']);
 
     // Categories
     Route::apiResource('categories', CategoryController::class)->except(['show']);
+
+    // Payment Methods
+    Route::apiResource('payment-methods', PaymentMethodController::class)->except(['show']);
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::post('/notifications', [\App\Http\Controllers\NotificationController::class, 'store']);
+    Route::put('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::put('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllRead']);
+    Route::delete('/notifications/{notification}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
 });

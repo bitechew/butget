@@ -23,11 +23,12 @@ class BudgetController extends Controller
         // Attach spent amount for each budget category
         $budgets = $budgets->map(function ($budget) use ($request, $month, $year) {
             $spent = $request->user()->transactions()
-                ->where('category', $budget->category)
-                ->where('type', 'expense')
-                ->whereMonth('date', $month)
-                ->whereYear('date', $year)
-                ->sum('amount');
+                ->join('categories', 'transactions.category_id', '=', 'categories.id')
+                ->where('categories.name', $budget->category)
+                ->where('transactions.type', 'expense')
+                ->whereMonth('transactions.date', $month)
+                ->whereYear('transactions.date', $year)
+                ->sum('transactions.amount');
 
             $budget->spent   = (float) $spent;
             $budget->remaining = max(0, (float) $budget->amount - (float) $spent);
