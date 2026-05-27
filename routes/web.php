@@ -15,6 +15,7 @@ Route::controller(ButgetController::class)->group(function () {
 
 Route::controller(ExpenseController::class)->group(function () {
     Route::get('/expenses', 'create')->name('expenses.create');
+    Route::get('/expenses/create', 'create')->name('expense.create');
     Route::post('/expenses', 'store')->name('expenses.store');
     Route::get('/expenses/{id}/edit', 'edit')->name('expenses.edit');
     Route::put('/expenses/{id}', 'update')->name('expenses.update');

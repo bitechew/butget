@@ -11,7 +11,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'from_account_id', 'to_account_id', 'description', 'amount', 'type', 'category_id',
+        'user_id', 'from_account_id', 'to_account_id', 'description', 'amount', 'type', 'category_id', 'category',
         'date', 'notes', 'is_recurring', 'recurrence_interval', 'recurring_parent_id',
     ];
 
