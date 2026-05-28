@@ -29,7 +29,7 @@ class AccountController extends Controller
             'name'     => 'required|string|max:255',
             'type'     => 'required|in:cash,checking,savings,investment,credit,loan,other',
             'balance'  => 'required|numeric',
-            'currency' => 'nullable|string|size:3',
+            'currency' => 'nullable|string|size:3|in:IDR,AUD',
             'color'    => 'nullable|string|max:7',
             'icon'     => 'nullable|string|max:50',
         ]);
@@ -48,7 +48,7 @@ class AccountController extends Controller
             'name'      => 'sometimes|string|max:255',
             'type'      => 'sometimes|in:cash,checking,savings,investment,credit,loan,other',
             'balance'   => 'sometimes|numeric',
-            'currency'  => 'nullable|string|size:3',
+            'currency'  => 'nullable|string|size:3|in:IDR,AUD',
             'color'     => 'nullable|string|max:7',
             'icon'      => 'nullable|string|max:50',
             'is_active' => 'boolean',
@@ -61,7 +61,8 @@ class AccountController extends Controller
     public function destroy(Request $request, Account $account)
     {
         $this->authorize('delete', $account);
-        $account->update(['is_active' => false]);
+        // Permanently remove the account record
+        $account->delete();
         return response()->json(null, 204);
     }
 

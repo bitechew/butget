@@ -65,7 +65,17 @@ class CategoryController extends Controller
         if ($category->user_id !== $request->user()->id) {
             abort(403);
         }
-        $category->update(['is_active' => false]);
+        // Permanently remove the category
+        $category->delete();
         return response()->json(null, 204);
+    }
+
+    public function restore(Request $request, Category $category)
+    {
+        if ($category->user_id !== $request->user()->id) {
+            abort(403);
+        }
+        $category->update(['is_active' => true]);
+        return response()->json($category);
     }
 }

@@ -41,6 +41,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('accounts', AccountController::class)->except(['show']);
 
     // Categories
+    Route::post('/categories/{category}/restore', [CategoryController::class, 'restore']);
+    Route::apiResource('categories', CategoryController::class)->except(['show']);
+
+    // Categories
     Route::apiResource('categories', CategoryController::class)->except(['show']);
 
     // Payment Methods

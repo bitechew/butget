@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Goal;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class GoalController extends Controller
 {
@@ -65,12 +67,35 @@ class GoalController extends Controller
 
         $data = $request->validate([
             'amount' => 'required|numeric|min:0.01',
+            'account_id' => 'nullable|exists:accounts,id',
+            'date' => 'nullable|date',
         ]);
+
+        if (!empty($data['account_id'])) {
+            $account = $request->user()->accounts()->find($data['account_id']);
+            if (!$account) {
+                abort(403);
+            }
+        }
 
         $goal->increment('current_amount', $data['amount']);
 
         if ($goal->current_amount >= $goal->target_amount) {
             $goal->update(['is_completed' => true]);
+        }
+
+        // Create a transaction record for this contribution if an account was provided
+        if (!empty($data['account_id'])) {
+            $txService = app(TransactionService::class);
+            $txPayload = [
+                'amount' => $data['amount'],
+                'from_account_id' => $data['account_id'],
+                'date' => $data['date'] ?? Carbon::now()->toDateString(),
+                'category' => 'Goal Contribution',
+                'notes' => 'Contribution to goal: ' . $goal->title,
+            ];
+            // Use createExpense which will update account balance atomically
+            $txService->createExpense($request->user(), $txPayload);
         }
 
         return response()->json($goal->fresh());
