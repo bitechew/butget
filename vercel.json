@@ -5,8 +5,5 @@
   },
   "routes": [
     { "src": "/(.*)", "dest": "/api/index.php" }
-  ],
-  "scripts": {
-    "vercel-build": "composer install --no-dev --optimize-autoloader && npm run build"
-  }
+  ]
 }
