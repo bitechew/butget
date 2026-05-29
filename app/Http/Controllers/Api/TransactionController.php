@@ -50,8 +50,23 @@ class TransactionController extends Controller
         $sortField = $request->get('sort', 'date');
         $sortDir   = $request->get('direction', 'desc');
         $allowedSorts = ['date', 'amount', 'description', 'category_id'];
+
+        // Apply requested sort if allowed, and always add a deterministic
+        // secondary ordering so results are stable across pages.
         if (in_array($sortField, $allowedSorts)) {
             $query->orderBy($sortField, $sortDir === 'asc' ? 'asc' : 'desc');
+
+            // If sorting by something other than date, keep date desc as
+            // a sensible secondary sort so newer transactions appear first.
+            if ($sortField !== 'date') {
+                $query->orderBy('date', 'desc');
+            }
+
+            // Always use created_at as a final tiebreaker to ensure stable ordering.
+            $query->orderBy('created_at', 'desc');
+        } else {
+            // Default ordering: newest by date, then by creation time.
+            $query->orderBy('date', 'desc')->orderBy('created_at', 'desc');
         }
 
         $perPage = (int) $request->get('per_page', 15);
