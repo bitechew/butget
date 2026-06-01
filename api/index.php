@@ -1,4 +1,4 @@
 <?php
 
-// Langsung arahkan secara saklek ke public/index.php milik Laravel
-require __DIR__ . '/../public/index.php';
+// Arahkan secara presisi ke folder public di tingkat yang sama
+require __DIR__ . '/public/index.php';
