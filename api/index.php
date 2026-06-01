@@ -1,4 +1,4 @@
 <?php
 
-// Arahkan secara presisi ke folder public di tingkat yang sama
+// Arahkan ke folder public di tingkat yang sama
 require __DIR__ . '/public/index.php';
