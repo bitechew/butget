@@ -4,10 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-// Deteksi otomatis base path yang kokoh untuk Vercel & Laragon
-$basePath = (str_contains(__DIR__, 'api') || isset($_SERVER['VERCEL_ENV']))
-            ? '/var/task/user'
-            : dirname(__DIR__);
+// Path deteksi otomatis untuk Vercel
+$basePath = isset($_SERVER['VERCEL_ENV']) ? '/var/task/user' : dirname(__DIR__);
 
 return Application::configure(basePath: $basePath)
     ->withRouting(
@@ -21,9 +19,7 @@ return Application::configure(basePath: $basePath)
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
-        $middleware->validateCsrfTokens(except: [
-            'api/*',
-        ]);
+        $middleware->validateCsrfTokens(except: ['api/*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
