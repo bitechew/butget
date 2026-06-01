@@ -1,0 +1,4 @@
+bootstrap/cache/*
+storage/framework/cache/*
+storage/framework/views/*
+.env
