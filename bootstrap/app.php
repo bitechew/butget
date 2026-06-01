@@ -14,16 +14,16 @@ foreach (['APP_BASE_PATH', 'APP_CONFIG_CACHE', 'APP_ROUTES_CACHE', 'APP_EVENTS_C
         unset($_SERVER[$key]);
     }
 
-    if (array_key_exists($key, $__ENV) && $_ENV[$key] === '') {
+    if (is_array($_ENV) && array_key_exists($key, $_ENV) && $_ENV[$key] === '') {
         unset($_ENV[$key]);
     }
 
     // If the env var points to a directory (e.g. "/var/task/user"), unset it.
-    if (array_key_exists($key, $_SERVER) && is_dir($_SERVER[$key])) {
+    if (array_key_exists($key, $_SERVER) && is_string($_SERVER[$key]) && is_dir($_SERVER[$key])) {
         unset($_SERVER[$key]);
     }
 
-    if (array_key_exists($key, $_ENV) && is_dir($_ENV[$key])) {
+    if (is_array($_ENV) && array_key_exists($key, $_ENV) && is_string($_ENV[$key]) && is_dir($_ENV[$key])) {
         unset($_ENV[$key]);
     }
 }
