@@ -1,18 +1,13 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "public/index.php",
-      "use": "vercel-php@0.9.0"
-    }
-  ],
+  "functions": {
+    "api/index.php": { "runtime": "vercel-php@0.7.1" },
+    "public/index.php": { "runtime": "vercel-php@0.7.1" }
+  },
   "routes": [
     {
       "src": "/(.*)",
       "dest": "public/index.php"
     }
-  ],
-  "env": {
-    "APP_BASE_PATH": "/var/task/user"
-  }
+  ]
 }
