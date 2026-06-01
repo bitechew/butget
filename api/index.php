@@ -1,7 +1,6 @@
 <?php
 
-// 1. Tentukan folder utama aplikasi (mundur 1 tingkat dari folder api)
-$appRoot = __DIR__ . '/..';
+// Paksa pemuatan konfigurasi dari folder root yang benar sebelum public dipanggil
+$_ENV['APP_BASE_PATH'] = __DIR__ . '/..';
 
-// 2. Langsung panggil file public bawaan Laravel
-require $appRoot . '/public/index.php';
+require __DIR__ . '/../public/index.php';
