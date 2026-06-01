@@ -1,4 +1,4 @@
 <?php
 
-// Pastikan kodenya mengarah langsung seperti ini
+// Jalur standar yang aman untuk pembacaan aplikasi
 require __DIR__ . '/public/index.php';
