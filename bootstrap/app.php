@@ -4,8 +4,18 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-// 1. Trik Khusus Vercel: Setel base path ke root project sesungguhnya saat di cloud
-$basePath = isset($_SERVER['VERCEL_URL']) ? '/var/task/user' : dirname(__DIR__);
+// 1. Use the actual project root from bootstrap, which works locally and on Vercel.
+$basePath = dirname(__DIR__);
+
+// Vercel may define empty APP_*_CACHE values. Ignore blank cache env vars so Laravel uses default cached paths.
+foreach (['APP_BASE_PATH', 'APP_CONFIG_CACHE', 'APP_ROUTES_CACHE', 'APP_EVENTS_CACHE', 'APP_SERVICES_CACHE', 'APP_PACKAGES_CACHE'] as $key) {
+    if (array_key_exists($key, $_SERVER) && $_SERVER[$key] === '') {
+        unset($_SERVER[$key]);
+    }
+    if (array_key_exists($key, $_ENV) && $_ENV[$key] === '') {
+        unset($_ENV[$key]);
+    }
+}
 
 return Application::configure(basePath: $basePath)
     ->withRouting(
