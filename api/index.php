@@ -1,4 +1,4 @@
 <?php
 
-// Mengarahkan Vercel keluar dari folder api untuk membaca eksekusi utama Laravel
-require __DIR__ . '/../public/index.php';
+// Pastikan kodenya mengarah langsung seperti ini
+require __DIR__ . '/public/index.php';
