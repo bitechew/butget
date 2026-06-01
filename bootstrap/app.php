@@ -4,8 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-// Path deteksi otomatis untuk Vercel
-$basePath = isset($_SERVER['VERCEL_ENV']) ? '/var/task/user' : dirname(__DIR__);
+// Mendapatkan root path yang sesungguhnya terlepas dari mana file dipanggil
+$basePath = realpath(__DIR__ . '/../');
 
 return Application::configure(basePath: $basePath)
     ->withRouting(
