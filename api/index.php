@@ -27,4 +27,19 @@ if (getenv('APP_BASE_PATH') === false || getenv('APP_BASE_PATH') === '' || (is_s
 }
 
 // Mengarahkan Vercel untuk membaca index utama Laravel
+// Emit debug info to runtime logs to help diagnose bad env values on Vercel.
+$debugKeys = array_merge(array_keys($defaults), ['APP_BASE_PATH']);
+foreach ($debugKeys as $k) {
+	$val = getenv($k);
+	error_log("DEBUG ENV {$k} getenv=" . var_export($val, true) . " ");
+	if (isset($_ENV[$k])) {
+		error_log("DEBUG ENV {$k} \$_ENV=" . var_export($_ENV[$k], true));
+	}
+	if (isset($_SERVER[$k])) {
+		error_log("DEBUG ENV {$k} \$_SERVER=" . var_export($_SERVER[$k], true));
+	}
+}
+
+error_log('DEBUG CWD=' . getcwd());
+
 require __DIR__ . '/../public/index.php';
