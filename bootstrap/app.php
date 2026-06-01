@@ -7,25 +7,37 @@ use Illuminate\Foundation\Configuration\Middleware;
 // 1. Use the actual project root from bootstrap, which works locally and on Vercel.
 $basePath = dirname(__DIR__);
 
-// Vercel may define empty or directory APP_*_CACHE values. Ignore invalid cache env vars
-// so Laravel falls back to default cached paths (prevents requiring a directory).
-foreach (['APP_BASE_PATH', 'APP_CONFIG_CACHE', 'APP_ROUTES_CACHE', 'APP_EVENTS_CACHE', 'APP_SERVICES_CACHE', 'APP_PACKAGES_CACHE'] as $key) {
-    if (array_key_exists($key, $_SERVER) && $_SERVER[$key] === '') {
-        unset($_SERVER[$key]);
-    }
+// Vercel may set APP_*_CACHE env vars to empty values or to the deployment
+// root directory (e.g. "/var/task/user"). That causes Laravel to treat the
+// app base path as a cached file path and `require` a directory. Normalize
+// these values to sensible defaults so Laravel resolves proper cache files.
+$defaults = [
+    'APP_CONFIG_CACHE' => 'cache/config.php',
+    'APP_ROUTES_CACHE' => 'cache/routes-v7.php',
+    'APP_EVENTS_CACHE' => 'cache/events.php',
+    'APP_SERVICES_CACHE' => 'cache/services.php',
+    'APP_PACKAGES_CACHE' => 'cache/packages.php',
+];
 
-    if (is_array($_ENV) && array_key_exists($key, $_ENV) && $_ENV[$key] === '') {
-        unset($_ENV[$key]);
-    }
+foreach ($defaults as $key => $default) {
+    $val = getenv($key);
 
-    // If the env var points to a directory (e.g. "/var/task/user"), unset it.
-    if (array_key_exists($key, $_SERVER) && is_string($_SERVER[$key]) && is_dir($_SERVER[$key])) {
-        unset($_SERVER[$key]);
+    // Treat missing, empty, or directory values as invalid and replace them
+    if ($val === false || $val === '' || (is_string($val) && is_dir($val))) {
+        // Use a project-relative default so Laravel will call basePath($default).
+        putenv("{$key}={$default}");
+        $_ENV[$key] = $default;
+        $_SERVER[$key] = $default;
     }
+}
 
-    if (is_array($_ENV) && array_key_exists($key, $_ENV) && is_string($_ENV[$key]) && is_dir($_ENV[$key])) {
-        unset($_ENV[$key]);
-    }
+// Ensure APP_BASE_PATH isn't an invalid directory value from the platform.
+// We still pass the explicit $basePath to Application::configure(), but
+// setting APP_BASE_PATH avoids other code inferring a wrong base path.
+if (getenv('APP_BASE_PATH') === false || getenv('APP_BASE_PATH') === '' || is_dir(getenv('APP_BASE_PATH'))) {
+    putenv("APP_BASE_PATH={$basePath}");
+    $_ENV['APP_BASE_PATH'] = $basePath;
+    $_SERVER['APP_BASE_PATH'] = $basePath;
 }
 
 return Application::configure(basePath: $basePath)
